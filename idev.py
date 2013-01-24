@@ -1,89 +1,85 @@
-from tkinter import *
-from tkinter import ttk
-
-
-root = Tk()
-
-content = ttk.Frame(root, padding=(3,3,12,12))
-frame = ttk.Frame(content, borderwidth=5, relief="sunken", width=200, height=100)
-namelbl = ttk.Label(content, text="Name")
-name = ttk.Entry(content)
-
-onevar = BooleanVar()
-twovar = BooleanVar()
-threevar = BooleanVar()
-
-onevar.set(True)
-twovar.set(False)
-threevar.set(True)
-
-one = ttk.Checkbutton(content, text="One", variable=onevar, onvalue=True)
-two = ttk.Checkbutton(content, text="Two", variable=twovar, onvalue=True)
-three = ttk.Checkbutton(content, text="Three", variable=threevar, onvalue=True)
-ok = ttk.Button(content, text="Okay")
-cancel = ttk.Button(content, text="Cancel")
-
-content.grid(column=0, row=0, sticky=(N, S, E, W))
-frame.grid(column=0, row=0, columnspan=3, rowspan=2, sticky=(N, S, E, W))
-namelbl.grid(column=3, row=0, columnspan=2, sticky=(N, W), padx=5)
-name.grid(column=3, row=1, columnspan=2, sticky=(N, E, W), pady=5, padx=5)
-one.grid(column=0, row=3)
-two.grid(column=1, row=3)
-three.grid(column=2, row=3)
-ok.grid(column=3, row=3)
-cancel.grid(column=4, row=3)
-
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-content.columnconfigure(0, weight=3)
-content.columnconfigure(1, weight=3)
-content.columnconfigure(2, weight=3)
-content.columnconfigure(3, weight=1)
-content.columnconfigure(4, weight=1)
-content.rowconfigure(1, weight=1)
-
-root.mainloop()
-exit()
-
+from blocks import *
 from tkinter import *
 from tkinter.ttk import *
+from formats import decode, encode
+from milstd import Tmk
 
+
+from collections import OrderedDict
+data = (0x0b08, 0x00c0, 0x10a0, 0xc350, 0xc350, 0x015e, 0x0514, 0x0000, 0x047e,
+    0xc350, 0x0000, 0xc350, 0x04b0, 0x1f40, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x00fa, 0x0032, 0x0014, 0x0000, 0x000a, 0x0000, 0x0000, 0x0000,
+    0x6000, 0x6000, 0x7000, 0x0000, 0x0000)
+
+udata = OrderedDict([
+    ('Режим работы', 'НК-КС'),
+    ('Борт цели', 'Левый'),
+    ('Ледовые условия', 'Не лёд'),
+    ('Шифр изделия', 'Одиночная с КМВ'),
+    ('Кратность цели', 'Второй КС'),
+    ('Вид стрельбы', 'Одиночная'),
+    ('Знак циркуляции', 'Право'),
+    ('Признак носителя', 'ПЛ с осевыми ТА'),
+    ('Режим движения', 'Vmax'),
+    ('Признак ТА', 'Не установлен'),
+    ('Признак «677»', 'Не установлен'),
+    ('Признак «грунт»', 'Не установлен'),
+    ('Признак «прилёд»', 'Не установлен'),
+    ('Восстановление блокировки', 'Запрещено'),
+    ('Маневрирование в ВП', 'Запрещено'),
+    ('Признак «МС ССН»', 'Не установлен'),
+    ('Номер широтного пояса', 4.0),
+    ('Включение ТУ', 'Не включено'),
+    ('Борт ТА', 'Правый'),
+    ('Вид конечной траектории', 'Прямо'),
+    ('Ранг цели', 'Эсминец / ДПЛ'),
+    ('Дα', 50000.0),
+    ('Др', 50000.0),
+    ('Дω1', 350.0),
+    ('Дсн', 1300.0),
+    ('Дω2', 0.0),
+    ('ДΔφ', 1150.0),
+    ('Дкр', 50000.0),
+    ('Дω3', 0.0),
+    ('Да', 50000.0),
+    ('Дhб', 1200.0),
+    ('Дпр', 8000.0),
+    ('ω1', 0.0),
+    ('ω2', 0.0),
+    ('ω3', 0.0),
+    ('h акватории', 250.0),
+    ('h слоя скачка', 50.0),
+    ('h маршевая', 20.0),
+    ('h поиска', 0.0),
+    ('h боевая', 10.0),
+    ('h ограничения верха', 0.0),
+    ('h ограничения низа', 0.0),
+    ('h отведедния', 0.0),
+    ('ω', 270.0),
+    ('ω + α', 270.0),
+    ('ω + Δφ', 315.0),
+    ('θ0', 0.0),
+    ('γ0', 0.0)
+])
+
+def action():
+    tmk.test(28)
+    log("Генерация массива")
+    tmk.upload(encode(udata, "kant3"), 28)
 
 root = Tk()
-mf = Frame(root)
-mf.grid(column=0, row=0, sticky=(N, W, E, S))
+tmk = Tmk()
 
-def calculate(*args):
-    try:
-        value = float(feet.get())
-        meters.set((0.3048 * value * 10000.0 + 0.5)/10000.0)
-    except ValueError:
-        pass
+HorizontalButtons(root, buttons=(
+        ("start", action),
+    )
+).grid(column=0, row=0, sticky=(N, W, E, S))
 
-root = Tk()
-root.title("Feet to Meters")
+log = Logger()
+log.grid(column=0, row=1, sticky=(N, W, E, S))
 
-mainframe = ttk.Frame(root, padding="3 3 12 12")
-mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-mainframe.columnconfigure(0, weight=1)
-mainframe.rowconfigure(0, weight=1)
-
-feet = StringVar()
-meters = StringVar()
-
-feet_entry = ttk.Entry(mainframe, width=7, textvariable=feet)
-feet_entry.grid(column=2, row=1, sticky=(W, E))
-
-ttk.Label(mainframe, textvariable=meters).grid(column=2, row=2, sticky=(W, E))
-ttk.Button(mainframe, text="Calculate", command=calculate).grid(column=3, row=3, sticky=W)
-
-ttk.Label(mainframe, text="feet").grid(column=3, row=1, sticky=W)
-ttk.Label(mainframe, text="is equivalent to").grid(column=1, row=2, sticky=E)
-ttk.Label(mainframe, text="meters").grid(column=3, row=2, sticky=W)
-
-for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
-
-feet_entry.focus()
-feet_entry.bind('<Return>', calculate)
-
+root.columnconfigure(0, weight=1)
+root.rowconfigure(1, weight=1)
 root.mainloop()
+
+tmk.release()
