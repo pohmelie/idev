@@ -62,24 +62,29 @@ udata = OrderedDict([
     ('γ0', 0.0)
 ])
 
-def action():
-    tmk.test(28)
-    log("Генерация массива")
-    tmk.upload(encode(udata, "kant3"), 28)
+from threading import Thread
+
+def test():
+    Thread(target=tmk.test, args=(28,)).start()
+
+def upload():
+    Thread(target=tmk.upload, args=(encode(udata, "kant3"), 28)).start()
 
 root = Tk()
-tmk = Tmk()
 
 HorizontalButtons(root, buttons=(
-        ("start", action),
+        ("Тест", test),
+        ("Ввод", upload),
     )
 ).grid(column=0, row=0, sticky=(N, W, E, S))
 
 log = Logger()
-log.grid(column=0, row=1, sticky=(N, W, E, S))
+log.grid(column=0, row=1, sticky=(W, E, S))
+
+tmk = Tmk(0, log)
 
 root.columnconfigure(0, weight=1)
-root.rowconfigure(1, weight=1)
+root.rowconfigure(0, weight=1)
 root.mainloop()
 
 tmk.release()
