@@ -11,32 +11,45 @@ class Tmk:
         self.log = log
         self.ntmk = ntmk
 
-        tmk.TmkOpen()
-        tmk.tmkconfig(self.ntmk)
-        tmk.bcreset()
-        tmk.bcdefbase(0)
-        tmk.bcdefbus(0)
+        self.logfun(tmk.TmkOpen, 0)
+        self.logfun(tmk.tmkconfig, 0, self.ntmk)
+        self.logfun(tmk.bcreset, 0)
+        self.logfun(tmk.bcdefbus, 0, 0)
+        self.logfun(tmk.bcdefbase, 0, 0)
 
     def release(self):
-        tmk.tmkdone(self.ntmk)
+        self.logfun(tmk.tmkdone, 0, self.ntmk)
         tmk.TmkClose()
+
+    def logfun(self, fun, ecode, *args):
+        rcode = fun(*args)
+        if rcode != ecode:
+            self.log(
+                "Ошибка: {}{} = {:x}, ожидалось {:x}".format(
+                    fun.__name__,
+                    args,
+                    rcode,
+                    ecode
+                ),
+                self.log.ERROR
+            )
 
     def send_block(self, code_word, data):
         tmk.bcputw(0, code_word)
         for i in range(len(data)):
-            tmk.bcputw(i, data[i])
+            tmk.bcputw(i + 1, data[i])
         tmk.bcputw(len(data) + 1, 0xffff)
-        tmk.bcstart(0, tmk.DATA_BC_RT)
-        sleep(0.002)
-        return tmk.bcgetw(len(data) + 1)
+        self.logfun(tmk.bcstart, 0, 0, tmk.DATA_BC_RT)
+        sleep(0.01)
+        self.logfun(tmk.bcgetw, (code_word >> 11) << 11, len(data) + 1)
 
     def get_block(self, code_word, count):
         d = []
         tmk.bcputw(0, code_word)
         for i in range(count):
             tmk.bcputw(i + 1, 0)
-        tmk.bcstart(0, tmk.DATA_RT_BC)
-        sleep(0.002)
+        self.logfun(tmk.bcstart, 0, 0, tmk.DATA_RT_BC)
+        sleep(0.01)
         for i in range(count):
             d.append(tmk.bcgetw(i + 2))
         return tuple(d)
@@ -44,27 +57,22 @@ class Tmk:
     def make_code_word(self, direction, address, subaddress, length):
         return (address << 11) | (direction << 10) | (subaddress << 5) | length
 
-    def test(self, address):
-        tdata = (0x5555, 0xaaaa, 0xff00, 0x00ff)
+    def test(self, address, tdata=(0x5555, 0xaaaa, 0xff00, 0x00ff)):
 
-        self.log("Тест")
-        working = [True, True]
-        for i in range(2):
-            tmk.bcdefbus(i)
-            self.send_block(self.make_code_word(Tmk.SEND, address, 18, 4), tdata)
-            sleep(0.1)
-            if tdata != self.get_block(self.make_code_word(Tmk.RECEIVE, address, 19, 4), 4):
-                log("Отказ {} канала".format(("основного", "резервного")[i]), log.ERROR)
-                working[i] = False
+        self.log("Тест", self.log.EVENT)
 
-        for i in range(2):
-            if working[i]:
-                tmk.bcdefbus(i)
-                break
-        else:
-            log("Отказ БЗ:МК", log.ERROR)
+        self.send_block(self.make_code_word(Tmk.SEND, address, 18, 4), tdata)
+        sleep(0.1)
+        rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 19, 4), 4)
 
-        log("Идёт контроль")
+        if tdata != rdata:
+            self.log("Отказ канала", self.log.ERROR)
+            self.log("Отправлено: {}".format(tuple(map(hex, tdata))), self.log.BORRING)
+            self.log("Принято: {}".format(tuple(map(hex, rdata))), self.log.BORRING)
+            return
+
+        self.log("Идёт контроль")
+
         status = 0
         for _ in range(80):
             sleep(0.1)
@@ -72,48 +80,37 @@ class Tmk:
             if status != Tmk.CONTROL:
                 break
 
-        log("status = {x:} ({x:0>16b})".format(x=status), log.BORRING)
         if status != Tmk.GOOD:
             if status & Tmk.BAD:
-                log("Отказ БЗ:ГО")
+                self.log("Отказ БЗ:ГО", self.log.ERROR)
             elif status & Tmk.READY:
-                log("Отказ БЗ:БК")
+                self.log("Отказ БЗ:БК", self.log.ERROR)
             elif status & Tmk.ERROR:
-                log("Отказ БЗ:БОД")
+                self.log("Отказ БЗ:БОД", self.log.ERROR)
+            self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
         else:
-            log("Изделие исправно")
+            self.log("Изделие исправно")
 
     def upload(self, data, address):
 
-        def send():
-            self.send_block(self.make_code_word(Tmk.SEND, address, 2, 0), data)
-            sleep(0.01)
-            self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xff,))
-            sleep(0.015)
-            return self.get_block(self.make_code_word(Tmk.RECEIVE, address, 2, 0), 32)
+        self.log("Ввод", self.log.EVENT)
 
-        self.log("Ввод массива")
-        tmk.bcdefbus(0)
-        sleep(0.1)
+        self.send_block(self.make_code_word(Tmk.SEND, address, 2, 0), data)
+        sleep(0.01)
+        self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xff,))
+        sleep(0.01)
+        rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 2, 0), 32)
 
-        if data != send():
-            log("Отказ основного канала", log.ERROR)
-            tmk.bcdefbus(1)
-            sleep(0.1)
-            self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xcece,))
-            sleep(0.1)
-            self.send_block(self.make_code_word(Tmk.SEND, address, 18, 1), (0xaa,))
-            sleep(0.1)
-
-            if data != send():
-                log("Отказ резервного канала", log.ERROR)
-                log("Ввод не прошёл")
-                log("Отказ БЗ:МК", log.ERROR)
-                return
+        if data != rdata:
+            self.log("Отказ канала", self.log.ERROR)
+            self.log("Отправлено: {}".format(tuple(map(hex, data))), self.log.BORRING)
+            self.log("Принято: {}".format(tuple(map(hex, rdata))), self.log.BORRING)
+            return
 
         sleep(0.1)
         self.send_block(self.make_code_word(Tmk.SEND, address, 18, 1), (0xecec,))
-        log("Ввод прошёл")
+
+        self.log("Ввод прошёл")
 
         status = 0
         for _ in range(10):
@@ -122,10 +119,10 @@ class Tmk:
             if status != 0 and status != (Tmk.PREPARE | Tmk.GOOD):
                 break
 
-        log("status = {x:} ({x:0>16b})".format(x=status), log.BORRING)
         if status == (Tmk.READY | Tmk.GOOD):
-            log("Блокировки сняты")
+            self.log("Блокировки сняты")
         elif status == Tmk.ERROR:
-            log("Заливка БОД")
+            self.log("Заливка БОД")
         else:
-            log("Отказ БЗ")
+            self.log("Отказ БЗ")
+            self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
