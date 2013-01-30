@@ -94,12 +94,20 @@ class Idev:
         )
         Table(tmp, columns=cols).grid(column=0, row=0, sticky=(N, W, E, S))
 
+        lc = LabelCombo(tmp, text="Тип:")
+        self.entry_type = lc.combo
+        lc.grid(column=0, row=1, sticky=(N, W, E, S))
+
+        le = LabelEntry(tmp, text="Описание:")
+        self.entry_desc = le.entry
+        le.grid(column=0, row=2, sticky=(N, W, E, S))
+
         btns = (
             ("Новый", None),
             ("Копировать", None),
             ("Удалить", None)
         )
-        HorizontalButtons(tmp, buttons=btns).grid(column=0, row=1, sticky=(N, W, E, S))
+        HorizontalButtons(tmp, buttons=btns).grid(column=0, row=3, sticky=(N, W, E, S))
 
         #"edit" parameters  side (right)
         cols = (
@@ -108,9 +116,11 @@ class Idev:
         )
         Table(tmp, columns=cols).grid(column=1, row=0, sticky=(N, W, E, S))
 
-        self.edit_value = Combobox(tmp, exportselection=0)
+        lc = LabelCombo(tmp, text="Значение:", cs=(N, W, E, S))
+        self.edit_value = lc.combo
         self.edit_value.state(("readonly",))
-        self.edit_value.grid(column=1, row=1, sticky=(N, W, E, S), pady=1)
+        lc.columnconfigure(0, weight=0)
+        lc.grid(column=1, row=1, sticky=(N, W, E, S), pady=1)
 
         btns = (
             ("Ввод", None),

@@ -123,6 +123,36 @@ class Table(Frame):
         self.item = self.tree.item
         self.insert = self.tree.insert
 
+class LabelCombo(Frame):
+    def __init__(self, *args, **kw):
+        text = kw.pop("text", "")
+        ls = kw.pop("ls", (E,))
+        cs = kw.pop("cs", (W,))
+
+        Frame.__init__(self, *args, **kw)
+
+        Label(self, text=text).grid(column=0, row=0, sticky=ls)
+        self.combo = Combobox(self, exportselection=0)
+        self.combo.grid(column=1, row=0, sticky=cs)
+
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+
+class LabelEntry(Frame):
+    def __init__(self, *args, **kw):
+        text = kw.pop("text", "")
+        ls = kw.pop("ls", (E,))
+        es = kw.pop("es", (W,))
+
+        Frame.__init__(self, *args, **kw)
+
+        Label(self, text=text).grid(column=0, row=0, sticky=ls)
+        self.entry = Entry(self)
+        self.entry.grid(column=1, row=0, sticky=es)
+
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+
 if __name__ == "__main__":
     root = Tk()
 
