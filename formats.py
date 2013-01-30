@@ -30,6 +30,21 @@ def encode(m, f):
         return tuple(d)
 
 
+def formats_list():
+    return tuple(map(lambda x: x.description, formats.values()))
+
+def new(f):
+    m = OrderedDict()
+    if f in formats:
+        for field in formats[f].fields:
+            desc = field.desc
+            m[field.name] = next(iter(desc.text)) if desc.text else 0
+        return m
+
+def addresses(s, f):
+    if f in formats:
+        return formats[f].address.get(s, None)
+
 class Container(dict):
     def __init__(self, *args, **kw):
         dict.__init__(self, *args, **kw)

@@ -1,7 +1,7 @@
-import formats
 from blocks import *
 from tkinter import *
 from tkinter.ttk import *
+from formats import decode, encode
 from milstd import Tmk
 
 
@@ -62,69 +62,7 @@ udata = OrderedDict([
     ('γ0', 0.0)
 ])
 
-
-class Idev:
-    def __init__(self):
-        self.root = Tk()
-        self.root.title("idev")
-        self._make_widgets()
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
-
-        self.mainloop = self.root.mainloop
-
-    def _make_widgets(self):
-        #"edit" frame
-        self.edit = Frame(self.root)
-        self.edit.columnconfigure(0, weight=1)
-        self.edit.rowconfigure(0, weight=1)
-        self.edit.grid(column=0, row=0, sticky=(N, W, E, S))
-
-        #"edit" choose array side (left)
-        tmp = Frame(self.edit, padding=(5, 5, 5, 5))
-        tmp.columnconfigure(0, weight=1)
-        tmp.columnconfigure(1, weight=1)
-        tmp.rowconfigure(0, weight=1)
-        tmp.grid(column=0, row=0, sticky=(N, W, E, S))
-
-        cols = (
-            ("Дата", dict(stretch=0, width=100)),
-            ("Тип", dict(stretch=0, width=100)),
-            ("Описание", {})
-        )
-        Table(tmp, columns=cols).grid(column=0, row=0, sticky=(N, W, E, S))
-
-        btns = (
-            ("Новый", None),
-            ("Копировать", None),
-            ("Удалить", None)
-        )
-        HorizontalButtons(tmp, buttons=btns).grid(column=0, row=1, sticky=(N, W, E, S))
-
-        #"edit" parameters  side (right)
-        cols = (
-            ("Параметр", {}),
-            ("Значение", {})
-        )
-        Table(tmp, columns=cols).grid(column=1, row=0, sticky=(N, W, E, S))
-
-        self.edit_value = Combobox(tmp, exportselection=0)
-        self.edit_value.state(("readonly",))
-        self.edit_value.grid(column=1, row=1, sticky=(N, W, E, S), pady=1)
-
-        btns = (
-            ("Ввод", None),
-            ("Тест", None)
-        )
-        HorizontalButtons(self.edit, buttons=btns).grid(column=0, row=1, sticky=(N, W, E, S))
-
-        #logger
-        self.log = Logger(self.root, text_height=10)
-        self.log.grid(column=0, row=2, sticky=(N, W, E, S))
-
-Idev().mainloop()
-
-'''from threading import Thread
+from threading import Thread
 
 
 def test():
@@ -151,4 +89,3 @@ root.rowconfigure(0, weight=1)
 root.mainloop()
 
 tmk.release()
-'''
