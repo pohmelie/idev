@@ -86,6 +86,7 @@ defdata = formats.Container(
 with open("data.pickle", "wb") as f:
     pickle.dump([defdata, deepcopy(defdata)], f)
 
+
 class Idev:
     def __init__(self):
         self.formats_list = formats.formats_list()
@@ -315,7 +316,6 @@ class Idev:
         f.columnconfigure(0, weight=1)
         f.grid(column=0, row=1, sticky=(N, W, E, S))
         Separator(f, orient=HORIZONTAL).grid(column=0, row=0, sticky=(W, E))
-
 
         f, self.address = LabelCombo(self.root, "Режим:")
         self.address.state(("readonly",))
