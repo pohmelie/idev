@@ -2,89 +2,13 @@ import pickle
 import os.path
 from copy import deepcopy
 from datetime import date
+from threading import Thread
 from tkinter import *
 from tkinter.ttk import *
 
 import formats
 from blocks import *
 from milstd import Tmk
-
-
-from collections import OrderedDict
-'''data = (0x0b08, 0x00c0, 0x10a0, 0xc350, 0xc350, 0x015e, 0x0514, 0x0000, 0x047e,
-    0xc350, 0x0000, 0xc350, 0x04b0, 0x1f40, 0x0000, 0x0000, 0x0000, 0x0000,
-    0x0000, 0x00fa, 0x0032, 0x0014, 0x0000, 0x000a, 0x0000, 0x0000, 0x0000,
-    0x6000, 0x6000, 0x7000, 0x0000, 0x0000)'''
-
-udata = OrderedDict([
-    ('Режим работы', 'НК-КС'),
-    ('Борт цели', 'Левый'),
-    ('Ледовые условия', 'Не лёд'),
-    ('Шифр изделия', 'Одиночная с КМВ'),
-    ('Кратность цели', 'Второй КС'),
-    ('Вид стрельбы', 'Одиночная'),
-    ('Знак циркуляции', 'Право'),
-    ('Признак носителя', 'ПЛ с осевыми ТА'),
-    ('Режим движения', 'Vmax'),
-    ('Признак ТА', 'Не установлен'),
-    ('Признак «677»', 'Не установлен'),
-    ('Признак «грунт»', 'Не установлен'),
-    ('Признак «прилёд»', 'Не установлен'),
-    ('Восстановление блокировки', 'Запрещено'),
-    ('Маневрирование в ВП', 'Запрещено'),
-    ('Признак «МС ССН»', 'Не установлен'),
-    ('Номер широтного пояса', 4.0),
-    ('Включение ТУ', 'Не включено'),
-    ('Борт ТА', 'Правый'),
-    ('Вид конечной траектории', 'Прямо'),
-    ('Ранг цели', 'Эсминец / ДПЛ'),
-    ('Дα', 50000.0),
-    ('Др', 50000.0),
-    ('Дω1', 350.0),
-    ('Дсн', 1300.0),
-    ('Дω2', 0.0),
-    ('ДΔφ', 1150.0),
-    ('Дкр', 50000.0),
-    ('Дω3', 0.0),
-    ('Да', 50000.0),
-    ('Дhб', 1200.0),
-    ('Дпр', 8000.0),
-    ('ω1', 0.0),
-    ('ω2', 0.0),
-    ('ω3', 0.0),
-    ('h акватории', 250.0),
-    ('h слоя скачка', 50.0),
-    ('h маршевая', 20.0),
-    ('h поиска', 0.0),
-    ('h боевая', 10.0),
-    ('h ограничения верха', 0.0),
-    ('h ограничения низа', 0.0),
-    ('h отведедния', 0.0),
-    ('ω', 270.0),
-    ('ω + α', 270.0),
-    ('ω + Δφ', 315.0),
-    ('θ0', 0.0),
-    ('γ0', 0.0)
-])
-
-'''
-codename
-date
-desc
-fields
-changed
-'''
-defdata = formats.Container(
-    codename="kant3",
-    date="2013-01-31",
-    desc="Тестовый массив",
-    fields=udata,
-    changed=False
-)
-
-
-with open("data.pickle", "wb") as f:
-    pickle.dump([defdata, deepcopy(defdata)], f)
 
 
 class Idev:
@@ -98,8 +22,8 @@ class Idev:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
 
+        self.tmk = Tmk(0, self.log)
         self.read_file()
-
         self.mainloop = self.root.mainloop
 
     def clear_edit(self):
@@ -190,7 +114,6 @@ class Idev:
             self.tarrays.item(iid, values=vals)
             if not d.changed:
                 self.tarrays.item(iid, text="[*] " + d.date)
-
             d.changed = True
 
     def entry_type_on_change(self, e):
@@ -253,6 +176,25 @@ class Idev:
             self.log(succ.format(fname), self.log.BORRING)
         except:
             self.log(fail.format(fname), self.log.ERROR)
+
+    def test(self):
+        if self.current_array is not None:
+            address = formats.addresses(
+                ("Практический", "Боевой")[self.address.current()],
+                self.data[self.current_array].codename
+            )
+            Thread(target=self.tmk.test, args=(address,)).start()
+
+    def upload(self):
+        if self.current_array is not None:
+            d = self.data[self.current_array]
+            rawd = formats.encode(d.fields, d.codename, self.log)
+            if rawd is not None:
+                address = formats.addresses(
+                    ("Практический", "Боевой")[self.address.current()],
+                    d.codename
+                )
+                Thread(target=self.tmk.upload, args=(rawd, address)).start()
 
     def _make_widgets(self):
         pn = PanedWindow(self.root, orient=HORIZONTAL)
@@ -324,41 +266,14 @@ class Idev:
         f.grid(column=0, row=2, sticky=(N, W, S))
 
         btns = (
-            ("Ввод", None),
-            ("Тест", None)
+            ("Ввод", self.upload),
+            ("Тест", self.test)
         )
         HorizontalButtons(self.root, buttons=btns).grid(column=0, row=3, sticky=(N, W, E, S))
 
         self.log = Logger(self.root, text_height=10)
         self.log.grid(column=0, row=4, sticky=(N, W, E, S))
 
-Idev().mainloop()
-
-'''from threading import Thread
-
-
-def test():
-    Thread(target=tmk.test, args=(28,)).start()
-
-def upload():
-    Thread(target=tmk.upload, args=(encode(udata, "kant3"), 28)).start()
-
-root = Tk()
-
-HorizontalButtons(root, buttons=(
-        ("Тест", test),
-        ("Ввод", upload),
-    )
-).grid(column=0, row=0, sticky=(N, W, E, S))
-
-log = Logger()
-log.grid(column=0, row=1, sticky=(W, E, S))
-
-tmk = Tmk(0, log)
-
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
-root.mainloop()
-
-tmk.release()
-'''
+idev = Idev()
+idev.mainloop()
+idev.tmk.release()
