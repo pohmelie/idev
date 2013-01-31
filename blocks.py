@@ -119,98 +119,19 @@ class Table(Frame):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        self.selected = self.tree.focus
+        self.delete = self.tree.delete
+        self.get_children = self.tree.get_children
+        self.focus = self.tree.focus
         self.item = self.tree.item
         self.insert = self.tree.insert
 
-class LabelCombo(Frame):
-    def __init__(self, *args, **kw):
-        text = kw.pop("text", "")
-        ls = kw.pop("ls", (E,))
-        cs = kw.pop("cs", (W,))
 
-        Frame.__init__(self, *args, **kw)
+def LabelCombo(root, text):
+    f = Frame(root)
+    f.columnconfigure(1, weight=1)
 
-        Label(self, text=text).grid(column=0, row=0, sticky=ls)
-        self.combo = Combobox(self, exportselection=0)
-        self.combo.grid(column=1, row=0, sticky=cs)
+    Label(f, text=text, anchor=E, width=15).grid(column=0, row=0, sticky=(N, W, E, S))
+    c = Combobox(f, exportselection=0)
+    c.grid(column=1, row=0, sticky=(N, W, E, S))
 
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-
-class LabelEntry(Frame):
-    def __init__(self, *args, **kw):
-        text = kw.pop("text", "")
-        ls = kw.pop("ls", (E,))
-        es = kw.pop("es", (W,))
-
-        Frame.__init__(self, *args, **kw)
-
-        Label(self, text=text).grid(column=0, row=0, sticky=ls)
-        self.entry = Entry(self)
-        self.entry.grid(column=1, row=0, sticky=es)
-
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-
-if __name__ == "__main__":
-    root = Tk()
-
-    HorizontalButtons(root, buttons=(
-        ("one", lambda: top.grid_remove()),
-        ("two", lambda: top.grid()),
-        ("three", lambda: combo.state(("!readonly",)))),
-        padding=(5, 5, 5, 5)
-    ).grid(column=0, row=1, sticky=(N, W, E, S))
-
-    log = Logger(root)
-    log.grid(column=0, row=2, sticky=(W, E, S))
-
-    top = Frame(root)
-    top.columnconfigure(0, weight=1)
-    top.columnconfigure(1, weight=1)
-    top.rowconfigure(0, weight=1)
-    top.grid(column=0, row=0, sticky=(N, W, E, S))
-
-    table = Table(
-        top,
-        columns=(
-            ("Дата", dict(stretch=0, width=100)),
-            ("Тип", dict(stretch=0, width=100)),
-            ("Описание", dict())
-        ),
-        callback = lambda: print(table.item(table.selected())),
-        padding=(5, 5, 5, 5)
-    )
-    table.grid(column=0, row=0, sticky=(N, W, E, S))
-
-    for i in range(100):
-        table.insert("", "end", text=str(i), tag=i)
-    table.insert("", "end", text="2013-01-29", values=("КАНТ-3", "нк"), tag="wow")
-    table.insert("", "end", text="2013-01-30", values=("КАНТ-3", "пл"))
-    table.insert("", "end", text="2013-01-30", values=("КАНТ-3", "нк, кц=0"))
-
-    table2 = Table(
-        top,
-        columns=(
-            ("Параметр", {}),
-            ("Значение", {})
-        ),
-        callback = lambda: print(table2.item(table2.selected())),
-        padding=(5, 5, 5, 5)
-    )
-    table2.grid(column=1, row=0, sticky=(N, W, E, S))
-
-    combo = Combobox(table2, exportselection=0, values=("one", "two", "three"))
-    combo.state(("readonly",))
-    combo.current(0)
-    combo.grid(column=0, row=2, sticky=(N, W, E, S))
-
-    root.columnconfigure(0, weight=1)
-    root.rowconfigure(0, weight=1)
-    root.rowconfigure(1, weight=1)
-    log("normal")
-    log("borring", Logger.BORRING)
-    log("error", Logger.ERROR)
-    log("event", Logger.EVENT)
-    root.mainloop()
+    return f, c

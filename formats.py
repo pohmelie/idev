@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from datetime import date
 
 
 def decode(d, f):
@@ -33,24 +34,39 @@ def encode(m, f):
 def formats_list():
     return tuple(map(lambda x: x.description, formats.values()))
 
+
 def new(f):
+    ret = Container()
     m = OrderedDict()
     if f in formats:
         for field in formats[f].fields:
             desc = field.desc
-            m[field.name] = next(iter(desc.text)) if desc.text else 0
-        return m
+            m[field.name] = next(iter(desc.text)) if desc.text else "0"
+        return Container(
+            codename=f,
+            date=date.today().strftime("%Y-%m-%d"),
+            desc="",
+            fields=m,
+            changed=True
+        )
+
 
 def addresses(s, f):
     if f in formats:
         return formats[f].address.get(s, None)
+
 
 class Container(dict):
     def __init__(self, *args, **kw):
         dict.__init__(self, *args, **kw)
 
     def __getattr__(self, name):
+        if name.startswith('__') and name.endswith('__'):
+            return super(Container, self).__getattr__(name)
         return self.get(name, None)
+
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
 '''
 Description of all availiable formats
