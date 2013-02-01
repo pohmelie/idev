@@ -179,21 +179,26 @@ class Idev:
 
     def test(self):
         if self.current_array is not None:
-            address = formats.addresses(
-                ("Практический", "Боевой")[self.address.current()],
-                self.data[self.current_array].codename
-            )
+            d = self.data[self.current_array]
+
+            mode = ("Практический", "Боевой")[self.address.current()]
+            desc = formats.formats[d.codename].description
+            self.log("Тест [{}, {}]".format(mode, desc), self.log.EVENT)
+
+            address = formats.addresses(mode, d.codename)
             Thread(target=self.tmk.test, args=(address,)).start()
 
     def upload(self):
         if self.current_array is not None:
             d = self.data[self.current_array]
+
+            mode = ("Практический", "Боевой")[self.address.current()]
+            desc = formats.formats[d.codename].description
+            self.log("Ввод [{}, {}]".format(mode, desc), self.log.EVENT)
+
             rawd = formats.encode(d.fields, d.codename, self.log)
             if rawd is not None:
-                address = formats.addresses(
-                    ("Практический", "Боевой")[self.address.current()],
-                    d.codename
-                )
+                address = formats.addresses(mode, d.codename)
                 Thread(target=self.tmk.upload, args=(rawd, address)).start()
 
     def _make_widgets(self):

@@ -58,9 +58,6 @@ class Tmk:
         return (address << 11) | (direction << 10) | (subaddress << 5) | length
 
     def test(self, address, tdata=(0x5555, 0xaaaa, 0xff00, 0x00ff)):
-
-        self.log("Тест", self.log.EVENT)
-
         self.send_block(self.make_code_word(Tmk.SEND, address, 18, 4), tdata)
         sleep(0.1)
         rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 19, 4), 4)
@@ -92,9 +89,6 @@ class Tmk:
             self.log("Изделие исправно")
 
     def upload(self, data, address):
-
-        self.log("Ввод", self.log.EVENT)
-
         self.send_block(self.make_code_word(Tmk.SEND, address, 2, 0), data)
         sleep(0.01)
         self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xff,))

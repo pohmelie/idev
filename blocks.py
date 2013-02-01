@@ -38,7 +38,7 @@ LoggerColors = Container(
             foreground='#93c763'
         ),
         event=Container(
-            foreground='#ADD8E6'
+            foreground='#7DA8D6',  # '#ADD8E6'
         ),
     )
 )
