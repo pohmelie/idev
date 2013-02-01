@@ -18,7 +18,9 @@ def decode(d, f):
         return m
 
 
-def encode(m, f):
+def encode(m, f, log):
+    err = "Значение '{}' поля '{}' невозможно преобразовать в float"
+    log("Генерация массива")
     d = [0] * 32
     if f in formats:
         for field in formats[f].fields:
@@ -26,7 +28,12 @@ def encode(m, f):
             if desc.text:
                 n = desc.text[m[field.name]]
             else:
-                n = round(m[field.name] / (desc.factor or 1)) & ((1 << (desc.width or 16)) - 1)
+                try:
+                    x = float(m[field.name])
+                except:
+                    log(err.format(m[field.name], field.name), log.ERROR)
+                    return
+                n = round(x / (desc.factor or 1)) & ((1 << (desc.width or 16)) - 1)
             d[desc.word] = d[desc.word] | (n << (desc.bit or 0))
         return tuple(d)
 
