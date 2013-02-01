@@ -67,8 +67,8 @@ class Tmk:
 
         if tdata != rdata:
             self.log("Отказ канала", self.log.ERROR)
-            self.log("Отправлено: {}".format(tuple(map(hex, tdata))), self.log.BORRING)
-            self.log("Принято: {}".format(tuple(map(hex, rdata))), self.log.BORRING)
+            self.log("Отправлено:\n{}".format(self.phex(tdata)), self.log.BORRING)
+            self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
             return
 
         self.log("Идёт контроль")
@@ -103,8 +103,8 @@ class Tmk:
 
         if data != rdata:
             self.log("Отказ канала", self.log.ERROR)
-            self.log("Отправлено: {}".format(tuple(map(hex, data))), self.log.BORRING)
-            self.log("Принято: {}".format(tuple(map(hex, rdata))), self.log.BORRING)
+            self.log("Отправлено:\n{}".format(self.phex(data)), self.log.BORRING)
+            self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
             return
 
         sleep(0.1)
@@ -128,3 +128,6 @@ class Tmk:
         else:
             self.log("Отказ БЗ")
             self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
+
+    def phex(self, data):
+        return " ".join(map("{:0>4x}".format, data))
