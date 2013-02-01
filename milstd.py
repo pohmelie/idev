@@ -122,7 +122,9 @@ class Tmk:
         if status == (Tmk.READY | Tmk.GOOD):
             self.log("Блокировки сняты")
         elif status == Tmk.ERROR:
-            self.log("Заливка БОД")
+            self.log("Отказ БЗ:БОД")
+        elif status == (Tmk.PREPARE | Tmk.GOOD):
+            self.log("Отказ БЗ:БК")
         else:
             self.log("Отказ БЗ")
             self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
