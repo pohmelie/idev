@@ -127,6 +127,7 @@ class Tmk:
 
         if status == (Tmk.READY | Tmk.GOOD):
             self.log("Исправно. Блокировки сняты")
+            self.log("Пуск разрешён")
         elif status == (Tmk.PREPARE | Tmk.GOOD):
             self.log("Блокировки не сняты", self.log.ERROR)
             self.log("Отказ БЗ", self.log.ERROR)
