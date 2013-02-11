@@ -63,11 +63,13 @@ class Tmk:
         rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 19, 4), 4)
 
         if tdata != rdata:
-            self.log("Отказ канала", self.log.ERROR)
+            self.log("Отказ МПИ", self.log.ERROR)
             self.log("Отправлено:\n{}".format(self.phex(tdata)), self.log.BORRING)
             self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
+            self.log("Отказ БЗ", self.log.ERROR)
             return
 
+        self.log("МПИ исправен")
         self.log("Идёт контроль")
 
         status = 0
@@ -78,49 +80,59 @@ class Tmk:
                 break
 
         if status != Tmk.GOOD:
-            if status & Tmk.BAD:
-                self.log("Отказ БЗ:ГО", self.log.ERROR)
-            elif status & Tmk.READY:
-                self.log("Отказ БЗ:БК", self.log.ERROR)
-            elif status & Tmk.ERROR:
-                self.log("Отказ БЗ:БОД", self.log.ERROR)
-            self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
+            if status == Tmk.CONTROL:
+                self.log("Отсутствие сообщения «Исправно»", self.log.ERROR)
+            elif status == Tmk.BAD:
+                self.log("Неисправно", self.log.ERROR)
+            elif status == Tmk.READY:
+                self.log("Блокировки сняты", self.log.ERROR)
+            elif status == Tmk.ERROR:
+                self.log("Заливка БОД", self.log.ERROR)
+            else:
+                self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
+            self.log("Отказ БЗ", self.log.ERROR)
         else:
             self.log("Изделие исправно")
+            self.log("БЗ готов")
 
     def upload(self, data, address):
         self.send_block(self.make_code_word(Tmk.SEND, address, 2, 0), data)
-        sleep(0.01)
+        sleep(0.1)
         self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xff,))
-        sleep(0.01)
+        self.log("Передача окончена")
+        sleep(0.1)
         rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 2, 0), 32)
 
         if data != rdata:
-            self.log("Отказ канала", self.log.ERROR)
+            self.log("Контроль не прошёл", self.log.ERROR)
             self.log("Отправлено:\n{}".format(self.phex(data)), self.log.BORRING)
             self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
+            self.log("Отказ БЗ", self.log.ERROR)
             return
 
+        self.log("Контроль прошёл")
         sleep(0.1)
         self.send_block(self.make_code_word(Tmk.SEND, address, 18, 1), (0xecec,))
 
-        self.log("Ввод прошёл")
-
         status = 0
+        once = True
         for _ in range(10):
             sleep(0.1)
             status = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 1, 1), 1)[0]
-            if status != 0 and status != (Tmk.PREPARE | Tmk.GOOD):
+            if once and status == (Tmk.PREPARE | Tmk.GOOD):
+                once = False
+                self.log("Исправно. Идёт подготовка.")
+            elif status != 0 and status != (Tmk.PREPARE | Tmk.GOOD):
                 break
 
         if status == (Tmk.READY | Tmk.GOOD):
-            self.log("Блокировки сняты")
-        elif status == Tmk.ERROR:
-            self.log("Отказ БЗ:БОД")
+            self.log("Исправно. Блокировки сняты")
         elif status == (Tmk.PREPARE | Tmk.GOOD):
-            self.log("Отказ БЗ:БК")
+            self.log("Блокировки не сняты", self.log.ERROR)
+            self.log("Отказ БЗ", self.log.ERROR)
         else:
-            self.log("Отказ БЗ")
+            self.log("Отказ рабочего МПИ", self.log.ERROR)
+            self.log("Отказ БЗ", self.log.ERROR)
             self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
 
     def phex(self, data):
