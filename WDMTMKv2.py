@@ -519,6 +519,162 @@ class TTmkConfigData(_object):
 TTmkConfigData_swigregister = _WDMTMKv2.TTmkConfigData_swigregister
 TTmkConfigData_swigregister(TTmkConfigData)
 
+class TBc(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TBc, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TBc, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["wResult"] = _WDMTMKv2.TBc_wResult_set
+    __swig_getmethods__["wResult"] = _WDMTMKv2.TBc_wResult_get
+    if _newclass:wResult = _swig_property(_WDMTMKv2.TBc_wResult_get, _WDMTMKv2.TBc_wResult_set)
+    __swig_setmethods__["wAW1"] = _WDMTMKv2.TBc_wAW1_set
+    __swig_getmethods__["wAW1"] = _WDMTMKv2.TBc_wAW1_get
+    if _newclass:wAW1 = _swig_property(_WDMTMKv2.TBc_wAW1_get, _WDMTMKv2.TBc_wAW1_set)
+    __swig_setmethods__["wAW2"] = _WDMTMKv2.TBc_wAW2_set
+    __swig_getmethods__["wAW2"] = _WDMTMKv2.TBc_wAW2_get
+    if _newclass:wAW2 = _swig_property(_WDMTMKv2.TBc_wAW2_get, _WDMTMKv2.TBc_wAW2_set)
+    def __init__(self): 
+        this = _WDMTMKv2.new_TBc()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_TBc
+    __del__ = lambda self : None;
+TBc_swigregister = _WDMTMKv2.TBc_swigregister
+TBc_swigregister(TBc)
+
+class TBcx(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TBcx, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TBcx, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["wBase"] = _WDMTMKv2.TBcx_wBase_set
+    __swig_getmethods__["wBase"] = _WDMTMKv2.TBcx_wBase_get
+    if _newclass:wBase = _swig_property(_WDMTMKv2.TBcx_wBase_get, _WDMTMKv2.TBcx_wBase_set)
+    __swig_setmethods__["wResultX"] = _WDMTMKv2.TBcx_wResultX_set
+    __swig_getmethods__["wResultX"] = _WDMTMKv2.TBcx_wResultX_get
+    if _newclass:wResultX = _swig_property(_WDMTMKv2.TBcx_wResultX_get, _WDMTMKv2.TBcx_wResultX_set)
+    def __init__(self): 
+        this = _WDMTMKv2.new_TBcx()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_TBcx
+    __del__ = lambda self : None;
+TBcx_swigregister = _WDMTMKv2.TBcx_swigregister
+TBcx_swigregister(TBcx)
+
+class TRt(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TRt, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TRt, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["wStatus"] = _WDMTMKv2.TRt_wStatus_set
+    __swig_getmethods__["wStatus"] = _WDMTMKv2.TRt_wStatus_get
+    if _newclass:wStatus = _swig_property(_WDMTMKv2.TRt_wStatus_get, _WDMTMKv2.TRt_wStatus_set)
+    __swig_setmethods__["wCmd"] = _WDMTMKv2.TRt_wCmd_set
+    __swig_getmethods__["wCmd"] = _WDMTMKv2.TRt_wCmd_get
+    if _newclass:wCmd = _swig_property(_WDMTMKv2.TRt_wCmd_get, _WDMTMKv2.TRt_wCmd_set)
+    def __init__(self): 
+        this = _WDMTMKv2.new_TRt()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_TRt
+    __del__ = lambda self : None;
+TRt_swigregister = _WDMTMKv2.TRt_swigregister
+TRt_swigregister(TRt)
+
+class TMt(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TMt, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TMt, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["wBase"] = _WDMTMKv2.TMt_wBase_set
+    __swig_getmethods__["wBase"] = _WDMTMKv2.TMt_wBase_get
+    if _newclass:wBase = _swig_property(_WDMTMKv2.TMt_wBase_get, _WDMTMKv2.TMt_wBase_set)
+    __swig_setmethods__["wResultX"] = _WDMTMKv2.TMt_wResultX_set
+    __swig_getmethods__["wResultX"] = _WDMTMKv2.TMt_wResultX_get
+    if _newclass:wResultX = _swig_property(_WDMTMKv2.TMt_wResultX_get, _WDMTMKv2.TMt_wResultX_set)
+    def __init__(self): 
+        this = _WDMTMKv2.new_TMt()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_TMt
+    __del__ = lambda self : None;
+TMt_swigregister = _WDMTMKv2.TMt_swigregister
+TMt_swigregister(TMt)
+
+class TMrt(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TMrt, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TMrt, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["wStatus"] = _WDMTMKv2.TMrt_wStatus_set
+    __swig_getmethods__["wStatus"] = _WDMTMKv2.TMrt_wStatus_get
+    if _newclass:wStatus = _swig_property(_WDMTMKv2.TMrt_wStatus_get, _WDMTMKv2.TMrt_wStatus_set)
+    def __init__(self): 
+        this = _WDMTMKv2.new_TMrt()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_TMrt
+    __del__ = lambda self : None;
+TMrt_swigregister = _WDMTMKv2.TMrt_swigregister
+TMrt_swigregister(TMrt)
+
+class TTmk(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TTmk, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TTmk, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["wRequest"] = _WDMTMKv2.TTmk_wRequest_set
+    __swig_getmethods__["wRequest"] = _WDMTMKv2.TTmk_wRequest_get
+    if _newclass:wRequest = _swig_property(_WDMTMKv2.TTmk_wRequest_get, _WDMTMKv2.TTmk_wRequest_set)
+    def __init__(self): 
+        this = _WDMTMKv2.new_TTmk()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_TTmk
+    __del__ = lambda self : None;
+TTmk_swigregister = _WDMTMKv2.TTmk_swigregister
+TTmk_swigregister(TTmk)
+
+class TSub(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, TSub, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, TSub, name)
+    __repr__ = _swig_repr
+    __swig_setmethods__["bc"] = _WDMTMKv2.TSub_bc_set
+    __swig_getmethods__["bc"] = _WDMTMKv2.TSub_bc_get
+    if _newclass:bc = _swig_property(_WDMTMKv2.TSub_bc_get, _WDMTMKv2.TSub_bc_set)
+    __swig_setmethods__["bcx"] = _WDMTMKv2.TSub_bcx_set
+    __swig_getmethods__["bcx"] = _WDMTMKv2.TSub_bcx_get
+    if _newclass:bcx = _swig_property(_WDMTMKv2.TSub_bcx_get, _WDMTMKv2.TSub_bcx_set)
+    __swig_setmethods__["rt"] = _WDMTMKv2.TSub_rt_set
+    __swig_getmethods__["rt"] = _WDMTMKv2.TSub_rt_get
+    if _newclass:rt = _swig_property(_WDMTMKv2.TSub_rt_get, _WDMTMKv2.TSub_rt_set)
+    __swig_setmethods__["mt"] = _WDMTMKv2.TSub_mt_set
+    __swig_getmethods__["mt"] = _WDMTMKv2.TSub_mt_get
+    if _newclass:mt = _swig_property(_WDMTMKv2.TSub_mt_get, _WDMTMKv2.TSub_mt_set)
+    __swig_setmethods__["mrt"] = _WDMTMKv2.TSub_mrt_set
+    __swig_getmethods__["mrt"] = _WDMTMKv2.TSub_mrt_get
+    if _newclass:mrt = _swig_property(_WDMTMKv2.TSub_mrt_get, _WDMTMKv2.TSub_mrt_set)
+    __swig_setmethods__["tmk"] = _WDMTMKv2.TSub_tmk_set
+    __swig_getmethods__["tmk"] = _WDMTMKv2.TSub_tmk_get
+    if _newclass:tmk = _swig_property(_WDMTMKv2.TSub_tmk_get, _WDMTMKv2.TSub_tmk_set)
+    def __init__(self): 
+        this = _WDMTMKv2.new_TSub()
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_TSub
+    __del__ = lambda self : None;
+TSub_swigregister = _WDMTMKv2.TSub_swigregister
+TSub_swigregister(TSub)
+
 class TTmkEventData(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, TTmkEventData, name, value)
@@ -531,6 +687,9 @@ class TTmkEventData(_object):
     __swig_setmethods__["wMode"] = _WDMTMKv2.TTmkEventData_wMode_set
     __swig_getmethods__["wMode"] = _WDMTMKv2.TTmkEventData_wMode_get
     if _newclass:wMode = _swig_property(_WDMTMKv2.TTmkEventData_wMode_get, _WDMTMKv2.TTmkEventData_wMode_set)
+    __swig_setmethods__["sub"] = _WDMTMKv2.TTmkEventData_sub_set
+    __swig_getmethods__["sub"] = _WDMTMKv2.TTmkEventData_sub_get
+    if _newclass:sub = _swig_property(_WDMTMKv2.TTmkEventData_sub_get, _WDMTMKv2.TTmkEventData_sub_set)
     def __init__(self): 
         this = _WDMTMKv2.new_TTmkEventData()
         try: self.this.append(this)
