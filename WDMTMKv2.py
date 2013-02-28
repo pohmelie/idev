@@ -67,6 +67,30 @@ except AttributeError:
     _newclass = 0
 
 
+class WordBuffer(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, WordBuffer, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, WordBuffer, name)
+    __repr__ = _swig_repr
+    def __init__(self, *args): 
+        this = _WDMTMKv2.new_WordBuffer(*args)
+        try: self.this.append(this)
+        except: self.this = this
+    __swig_destroy__ = _WDMTMKv2.delete_WordBuffer
+    __del__ = lambda self : None;
+    def __getitem__(self, *args) -> "unsigned short" : return _WDMTMKv2.WordBuffer___getitem__(self, *args)
+    def __setitem__(self, *args) -> "void" : return _WDMTMKv2.WordBuffer___setitem__(self, *args)
+    def cast(self) -> "unsigned short *" : return _WDMTMKv2.WordBuffer_cast(self)
+    __swig_getmethods__["frompointer"] = lambda x: _WDMTMKv2.WordBuffer_frompointer
+    if _newclass:frompointer = staticmethod(_WDMTMKv2.WordBuffer_frompointer)
+WordBuffer_swigregister = _WDMTMKv2.WordBuffer_swigregister
+WordBuffer_swigregister(WordBuffer)
+
+def WordBuffer_frompointer(*args) -> "WordBuffer *" :
+  return _WDMTMKv2.WordBuffer_frompointer(*args)
+WordBuffer_frompointer = _WDMTMKv2.WordBuffer_frompointer
+
 TMK_VERSION_MIN = _WDMTMKv2.TMK_VERSION_MIN
 TMK_VERSION = _WDMTMKv2.TMK_VERSION
 MAX_TMK_NUMBER = _WDMTMKv2.MAX_TMK_NUMBER
