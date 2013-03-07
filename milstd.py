@@ -1,4 +1,4 @@
-import WDMTMKv2 as tmk
+﻿import WDMTMKv2 as tmk
 from time import sleep
 
 
@@ -41,7 +41,7 @@ class Tmk:
         tmk.bcputw(len(data) + 1, 0xffff)
         self.logfun(tmk.bcstart, 0, 0, tmk.DATA_BC_RT)
         sleep(0.01)
-        self.logfun(tmk.bcgetw, (code_word >> 11) << 11, len(data) + 1)
+        #self.logfun(tmk.bcgetw, (code_word >> 11) << 11, len(data) + 1)
 
     def get_block(self, code_word, count):
         d = []
@@ -58,18 +58,34 @@ class Tmk:
         return (address << 11) | (direction << 10) | (subaddress << 5) | length
 
     def test(self, address, tdata=(0x5555, 0xaaaa, 0xff00, 0x00ff)):
-        self.send_block(self.make_code_word(Tmk.SEND, address, 18, 4), tdata)
-        sleep(0.1)
-        rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 19, 4), 4)
+        lines = [False, False]
 
-        if tdata != rdata:
-            self.log("Отказ МПИ", self.log.ERROR)
-            self.log("Отправлено:\n{}".format(self.phex(tdata)), self.log.BORRING)
-            self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
+        for i in range(2):
+            self.logfun(tmk.bcdefbus, 0, i)
+            for attempt in range(2):
+                self.send_block(self.make_code_word(Tmk.SEND, address, 18, 4), tdata)
+                sleep(0.1)
+                rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 19, 4), 4)
+
+                if tdata == rdata:
+                    self.log("МПИ {} исправен".format(("осн.", "рез.")[i]))
+                    lines[i] = True
+                    break
+
+                if attempt == 0:
+                    self.send_block(self.make_code_word(Tmk.SEND, address, 18, 1), (0x00aa,))
+                else:
+                    self.log("Отказ МПИ {}".format(("осн.", "рез.")[i]), self.log.ERROR)
+                    self.log("Отправлено:\n{}".format(self.phex(tdata)), self.log.BORRING)
+                    self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
+
+        if not any(lines):
             self.log("Отказ БЗ", self.log.ERROR)
             return
 
-        self.log("МПИ исправен")
+        working_line = lines.index(True)
+        self.log("Используется МПИ {}".format(("осн.", "рез.")[working_line]))
+        self.logfun(tmk.bcdefbus, 0, working_line)
         self.log("Идёт контроль")
 
         status = 0
@@ -83,7 +99,7 @@ class Tmk:
             if status == Tmk.CONTROL:
                 self.log("Отсутствие сообщения «Исправно»", self.log.ERROR)
             elif status == Tmk.BAD:
-                self.log("Неисправно", self.log.ERROR)
+                self.log("Неисправно (брак МЧ)", self.log.ERROR)
             elif status == Tmk.READY:
                 self.log("Блокировки сняты", self.log.ERROR)
             elif status == Tmk.ERROR:
@@ -96,19 +112,38 @@ class Tmk:
             self.log("БЗ готов")
 
     def upload(self, data, address):
-        self.send_block(self.make_code_word(Tmk.SEND, address, 2, 0), data)
-        sleep(0.1)
-        self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xff,))
-        self.log("Передача окончена")
-        sleep(0.1)
-        rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 2, 0), 32)
+        up = False
 
-        if data != rdata:
-            self.log("Контроль не прошёл", self.log.ERROR)
-            self.log("Отправлено:\n{}".format(self.phex(data)), self.log.BORRING)
-            self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
-            self.log("Отказ БЗ", self.log.ERROR)
-            return
+        for i in range(2):
+            if up:
+                break
+            self.logfun(tmk.bcdefbus, 0, i)
+            self.log("Передача по МПИ {}".format(("осн.", "рез.")[i]))
+
+            for attempt in range(2):
+                sleep(0.1)
+                self.send_block(self.make_code_word(Tmk.SEND, address, 2, 0), data)
+                sleep(0.1)
+                self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xff,))
+                sleep(0.1)
+                rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 2, 0), 32)
+
+                if data == rdata:
+                    up = True
+                    break
+
+                if attempt == 0:
+                    sleep(0.1)
+                    self.send_block(self.make_code_word(Tmk.SEND, address, 18, 1), (0x00aa,))
+                sleep(0.1)
+                self.send_block(self.make_code_word(Tmk.SEND, address, 1, 1), (0xcece,))
+                if attempt == 1:
+                    self.log("Контроль не прошёл", self.log.ERROR)
+                    self.log("Отправлено:\n{}".format(self.phex(data)), self.log.BORRING)
+                    self.log("Принято:\n{}".format(self.phex(rdata)), self.log.BORRING)
+                    if i == 1:
+                        self.log("Отказ БЗ", self.log.ERROR)
+                        return
 
         self.log("Контроль прошёл")
         sleep(0.1)

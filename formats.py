@@ -192,8 +192,8 @@ formats = Container(
                 name="Признак ТА",
                 desc=Container(word=1, bit=11, width=1,
                     text=OrderedDict((
-                        ("Не установлен", 0),
-                        ("Установлен", 1)
+                        ("Не ПЛ с боковым расположением ТА", 0),
+                        ("ПЛ с боковым расположением ТА", 1)
                     ))
                 )
             ),
@@ -201,8 +201,8 @@ formats = Container(
                 name="Признак «677»",  # a-0171, a0187
                 desc=Container(word=1, bit=10, width=1,
                     text=OrderedDict((
-                        ("Не установлен", 0),
-                        ("Установлен", 1)
+                        ("не ПЛ 677", 0),
+                        ("ПЛ 677", 1)
                     ))
                 )
             ),
@@ -210,8 +210,8 @@ formats = Container(
                 name="Признак «грунт»",
                 desc=Container(word=1, bit=9, width=1,
                     text=OrderedDict((
-                        ("Не установлен", 0),
-                        ("Установлен", 1)
+                        ("Не грунт", 0),
+                        ("Грунт", 1)
                     ))
                 )
             ),
@@ -219,8 +219,8 @@ formats = Container(
                 name="Признак «прилёд»",
                 desc=Container(word=1, bit=8, width=1,
                     text=OrderedDict((
-                        ("Не установлен", 0),
-                        ("Установлен", 1)
+                        ("Не прилёд", 0),
+                        ("Прилёд", 1)
                     ))
                 )
             ),
@@ -246,8 +246,8 @@ formats = Container(
                 name="Признак «МС ССН»",
                 desc=Container(word=1, bit=5, width=1,
                     text=OrderedDict((
-                        ("Не установлен", 0),
-                        ("Установлен", 1)
+                        ("МС ССН не используется", 0),
+                        ("МС ССН используется", 1)
                     ))
                 )
             ),
@@ -281,7 +281,7 @@ formats = Container(
                 )
             ),
             Container(
-                name="Ранг цели",
+                name="Ранг цели (НК / ПЛ)",
                 desc=Container(word=2, bit=4, width=2,
                     text=OrderedDict((
                         ("Авианос / АПРЛ", 0),

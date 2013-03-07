@@ -1,5 +1,4 @@
 /__pycache__/
 /arc/
 /info/
-/mod/
-/mod_module/
+/*.pickle
