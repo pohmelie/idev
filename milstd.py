@@ -166,6 +166,9 @@ class Tmk:
         elif status == (Tmk.PREPARE | Tmk.GOOD):
             self.log("Блокировки не сняты", self.log.ERROR)
             self.log("Отказ БЗ", self.log.ERROR)
+        elif status == Tmk.ERROR:
+            self.log("Заливка БОД", self.log.ERROR)
+            self.log("Отказ БЗ", self.log.ERROR)
         else:
             self.log("Отказ рабочего МПИ", self.log.ERROR)
             self.log("Отказ БЗ", self.log.ERROR)
