@@ -18,6 +18,7 @@ class Idev:
 
         self.root = Tk()
         self.root.title("idev")
+        self.root.iconbitmap("favicon.ico")
         self._make_widgets()
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
