@@ -6,6 +6,7 @@ options = {
         "includes": [],
         "create_shared_zip": False,
         "packages": [],
+        "include_msvcr": True,
     }
 }
 
