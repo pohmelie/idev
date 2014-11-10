@@ -1,4 +1,6 @@
-﻿import WDMTMKv2 as tmk
+﻿import functools
+
+import WDMTMKv2 as tmk
 from time import sleep
 
 
@@ -57,7 +59,7 @@ class Tmk:
     def make_code_word(self, direction, address, subaddress, length):
         return (address << 11) | (direction << 10) | (subaddress << 5) | length
 
-    def test(self, address, tdata=(0x5555, 0xaaaa, 0xff00, 0x00ff)):
+    def test_kant3(self, address, tdata=(0x5555, 0xaaaa, 0xff00, 0x00ff)):
         lines = [False, False]
 
         for i in range(2):
@@ -111,7 +113,7 @@ class Tmk:
             self.log("Изделие исправно")
             self.log("БЗ готов")
 
-    def upload(self, data, address):
+    def upload_kant3(self, data, address):
         up = False
 
         for i in range(2):
@@ -173,6 +175,54 @@ class Tmk:
             self.log("Отказ рабочего МПИ", self.log.ERROR)
             self.log("Отказ БЗ", self.log.ERROR)
             self.log("status = {x:} ({x:0>16b})".format(x=status), self.log.BORRING)
+
+    def checksum(self, data, count=None):
+        if count:
+            data = map(data.__get__, range(count))
+        return functools.reduce(lambda s, x: ((s + x) + ((s + x) >> 16)) & 0xffff, data)
+
+
+    def upload_plavun(self, data, address):
+        up = False
+        crc = 0xffff
+        for i in range(12):
+            crc ^= data[i]  & 0xff
+            for _ in range(8):
+                crc = (crc >> 1) & 0x7fff
+                if crc & 1:
+                    crc = (crc >> 1) & 0x7fff
+                else:
+                    crc = crc ^ 0xa001
+
+        data = data[:12] + (crc,)
+        for i in range(2):
+            if up:
+                break
+            self.logfun(tmk.bcdefbus, 0, i)
+            self.log("Передача по МПИ {}".format(("осн.", "рез.")[i]))
+
+            for attempt in range(2):
+                sleep(0.1)
+                self.send_block(self.make_code_word(Tmk.SEND, address, 3, 13), data)
+                sleep(0.1)
+                aw = tmk.bcgetw(14)
+                if aw != 0:
+                    self.log("Неправильное ОС(0x{:x})".format(aw), self.log.ERROR)
+                    break
+
+                rdata = self.get_block(self.make_code_word(Tmk.RECEIVE, address, 6, 1), 1)
+                if rdata == (0x5555,):
+                    self.log("Получена решётка 0x{:x}".format(rdata[0]), self.log.BORRING)
+                elif rdata == (0xaaaa,):
+                    up = True
+                    break
+                else:
+                    self.log("Получена неправильная решётка 0x{:x}".format(rdata[0]), self.log.ERROR)
+                    break
+        if up:
+            self.log("Ввод прошёл")
+        else:
+            self.log("Ввод не прошёл", self.log.ERROR)
 
     def phex(self, data):
         return " ".join(map("{:0>4x}".format, data))

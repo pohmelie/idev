@@ -1,5 +1,6 @@
 import pickle
 import os.path
+import operator
 from copy import deepcopy
 from datetime import date
 from threading import Thread
@@ -182,16 +183,29 @@ class Idev:
         if self.current_array is not None:
             d = self.data[self.current_array]
 
+            method_name = str.format("test_{}", d.codename)
+            if not hasattr(self.tmk, method_name):
+
+                self.log("Действие невозможно для данного типа", self.log.EVENT)
+                return
+
             mode = ("Практический", "Боевой")[self.address.current()]
             desc = formats.formats[d.codename].description
             self.log("Тест [{}, {}]".format(mode, desc), self.log.EVENT)
 
             address = formats.addresses(mode, d.codename)
-            Thread(target=self.tmk.test, args=(address,)).start()
+            target = operator.methodcaller(method_name, address)
+            Thread(target=target, args=(self.tmk,)).start()
 
     def upload(self):
         if self.current_array is not None:
             d = self.data[self.current_array]
+
+            method_name = str.format("upload_{}", d.codename)
+            if not hasattr(self.tmk, method_name):
+
+                self.log("Действие невозможно для данного типа", self.log.EVENT)
+                return
 
             mode = ("Практический", "Боевой")[self.address.current()]
             desc = formats.formats[d.codename].description
@@ -200,7 +214,8 @@ class Idev:
             rawd = formats.encode(d.fields, d.codename, self.log)
             if rawd is not None:
                 address = formats.addresses(mode, d.codename)
-                Thread(target=self.tmk.upload, args=(rawd, address)).start()
+                target = operator.methodcaller(method_name, rawd, address)
+                Thread(target=target, args=(self.tmk,)).start()
 
     def _make_widgets(self):
         pn = PanedWindow(self.root, orient=HORIZONTAL)
@@ -280,6 +295,8 @@ class Idev:
         self.log = Logger(self.root, text_height=10)
         self.log.grid(column=0, row=4, sticky=(N, W, E, S))
 
-idev = Idev()
-idev.mainloop()
-idev.tmk.release()
+if __name__ == "__main__":
+
+    idev = Idev()
+    idev.mainloop()
+    idev.tmk.release()
