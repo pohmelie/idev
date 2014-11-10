@@ -33,7 +33,11 @@ def encode(m, f, log):
                 except:
                     log(err.format(m[field.name], field.name), log.ERROR)
                     return
-                n = round(x / (desc.factor or 1)) & ((1 << (desc.width or 16)) - 1)
+
+                if desc.encode:
+                    n = desc.encode(x) & ((1 << (desc.width or 16)) - 1)
+                else:
+                    n = round(x / (desc.factor or 1)) & ((1 << (desc.width or 16)) - 1)
             d[desc.word] = d[desc.word] | (n << (desc.bit or 0))
         return tuple(d)
 
@@ -79,6 +83,7 @@ class Container(dict):
 Description of all availiable formats
 factor:
     real number = array number * factor
+    'encode' for direct bits creation
 if omitted:
     factor = 1
     width = 16
@@ -321,6 +326,78 @@ formats = Container(
 
             Container(name="θ0", desc=Container(word=30, factor=180 / 32768)),
             Container(name="γ0", desc=Container(word=31, factor=360 / 32768))
+        )
+    ),
+    plavun=Container(
+        codename="plavun",
+        description="Плавун",
+        address=OrderedDict((
+            ("Практический", 0),
+            ("Боевой", 0),
+        )),
+        fields=(
+            Container(
+                name="Режим",
+                desc=Container(word=0, bit=7, width=1,
+                    text=OrderedDict((
+                        ("Штатный", 0),
+                        ("Аварийный", 1),
+                    ))
+                )
+            ),
+            Container(
+                name="Ледовые условия",
+                desc=Container(word=0, bit=6, width=1,
+                    text=OrderedDict((
+                        ("Отсутствие льда", 0),
+                        ("Наличие льда", 1),
+                    ))
+                )
+            ),
+            Container(
+                name="Движение цели",
+                desc=Container(word=0, bit=5, width=1,
+                    text=OrderedDict((
+                        ("Приближение", 1),
+                        ("Удаление", 2),
+                    ))
+                )
+            ),
+            Container(name="Максимальная глубина", desc=Container(word=1, factor=5)),
+            Container(name="Углубление МК", desc=Container(word=2, factor=5)),
+            Container(name="Дистанция до цели (t0)", desc=Container(word=3, factor=7.5)),
+            Container(name="Угол цели α (t0)", desc=Container(word=4, factor=2)),
+            Container(
+                name="Угол цели β (t0)",
+                desc=Container(
+                    word=5,
+                    encode=lambda x: round(x) | ((1 << 7) if x >= 0 else 0)
+                ),
+            ),
+            Container(name="Угол поворота МК (t0)", desc=Container(word=6, factor=2)),
+            Container(name="Угол поворота МК (t1)", desc=Container(word=7, factor=2)),
+            Container(name="Время между t0 и t1", desc=Container(word=8, factor=0.01)),
+            Container(
+                name="Проекция угла наклона ε0",
+                desc=Container(
+                    word=9,
+                    encode=lambda x: round(x / 0.3) | ((1 << 7) if x >= 0 else 0)
+                )
+            ),
+            Container(
+                name="Проекция угла наклона ε1",
+                desc=Container(
+                    word=10,
+                    encode=lambda x: round(x / 0.3) | ((1 << 7) if x >= 0 else 0)
+                )
+            ),
+            Container(
+                name="Проекция угла наклона ε2",
+                desc=Container(
+                    word=11,
+                    encode=lambda x: round(x / 0.3) | ((1 << 7) if x >= 0 else 0)
+                )
+            )
         )
     )
 )
