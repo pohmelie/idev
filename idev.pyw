@@ -66,7 +66,14 @@ class Idev:
         if hasattr(calculate, d.codename):
 
             self.tdata.insert("", "end", text="Вычисленные параметры:", values=("",))
-            calculated = getattr(calculate, d.codename)(d.fields)
+            try:
+
+                calculated = getattr(calculate, d.codename)(d.fields)
+
+            except:
+
+                calculated = {"Невозможно вычислить параметры": ""}
+                
             for k, v in calculated.items():
 
                 self.tdata.insert("", "end", text=k, values=(v,))
@@ -120,19 +127,25 @@ class Idev:
             self.tdata.item(iid, values=[s])
             d.fields[t] = s
 
-            if hasattr(calculate, d.codename):
+            try:
+                
+                if hasattr(calculate, d.codename):
 
-                calculated = getattr(calculate, d.codename)(d.fields)
-                i = iid
-                while self.tdata.item(i)["text"] != "Вычисленные параметры:":
+                    calculated = getattr(calculate, d.codename)(d.fields)
+                    i = iid
+                    while self.tdata.item(i)["text"] != "Вычисленные параметры:":
 
-                    i = self.tdata.tree.next(i)
+                        i = self.tdata.tree.next(i)
 
-                for _ in range(len(calculated)):
+                    for _ in range(len(calculated)):
 
-                    i = self.tdata.tree.next(i)
-                    it = self.tdata.item(i)
-                    self.tdata.item(i, values=(calculated[it["text"]],))
+                        i = self.tdata.tree.next(i)
+                        it = self.tdata.item(i)
+                        self.tdata.item(i, values=(calculated[it["text"]],))
+
+            except:
+
+                pass
 
             iid = self.tarrays.focus()
             if not d.changed:
