@@ -336,6 +336,7 @@ formats = Container(
             ("Боевой", 0),
         )),
         fields=(
+            Container(name="Число слов", desc=Container(word=0, bit=0, width=5)),
             Container(
                 name="Режим",
                 desc=Container(word=0, bit=7, width=1,
