@@ -1,6 +1,7 @@
 import pickle
 import os.path
 import operator
+import sys
 from copy import deepcopy
 from datetime import date
 from threading import Thread
@@ -8,6 +9,7 @@ from tkinter import *
 from tkinter.ttk import *
 
 import formats
+import calculate
 from blocks import *
 from milstd import Tmk
 
@@ -19,7 +21,10 @@ class Idev:
 
         self.root = Tk()
         self.root.title("idev")
-        self.root.iconbitmap("favicon.ico")
+        if sys.platform == "win32":
+
+            self.root.iconbitmap("favicon.ico")
+
         self._make_widgets()
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
@@ -58,6 +63,14 @@ class Idev:
         for k in d.fields:
             self.tdata.insert("", "end", text=k, values=(d.fields[k],))
 
+        if hasattr(calculate, d.codename):
+
+            self.tdata.insert("", "end", text="Вычисленные параметры:", values=("",))
+            calculated = getattr(calculate, d.codename)(d.fields)
+            for k, v in calculated.items():
+
+                self.tdata.insert("", "end", text=k, values=(v,))
+
     def choose_array(self):
         self.clear_tdata()
 
@@ -89,6 +102,14 @@ class Idev:
                         self.edit_value["values"] = ()
                         self.edit_value.set(v)
 
+                    break
+
+            else:
+
+                self.edit_value.state(("readonly",))
+                self.edit_value["values"] = ()
+                self.edit_value.set(v)
+
     def edit_value_on_change(self, e):
         iid = self.tdata.focus()
         s = self.edit_value_v.get()
@@ -98,6 +119,20 @@ class Idev:
             t = it["text"]
             self.tdata.item(iid, values=[s])
             d.fields[t] = s
+
+            if hasattr(calculate, d.codename):
+
+                calculated = getattr(calculate, d.codename)(d.fields)
+                i = iid
+                while self.tdata.item(i)["text"] != "Вычисленные параметры:":
+
+                    i = self.tdata.tree.next(i)
+
+                for _ in range(len(calculated)):
+
+                    i = self.tdata.tree.next(i)
+                    it = self.tdata.item(i)
+                    self.tdata.item(i, values=(calculated[it["text"]],))
 
             iid = self.tarrays.focus()
             if not d.changed:
