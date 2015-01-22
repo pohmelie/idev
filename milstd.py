@@ -198,9 +198,9 @@ class Tmk:
             for _ in range(8):
                 crc = (crc >> 1) & 0x7fff
                 if crc & 1:
-                    crc = (crc >> 1) & 0x7fff
-                else:
                     crc = crc ^ 0xa001
+                else:
+                    crc = (crc >> 1) & 0x7fff
 
         data = data[:12] + (crc,)
         for i in range(2):
