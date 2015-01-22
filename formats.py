@@ -372,7 +372,7 @@ formats = Container(
                 name="Угол цели β (t0)",
                 desc=Container(
                     word=5,
-                    encode=lambda x: round(x) | ((1 << 7) if x >= 0 else 0)
+                    encode=lambda x: round(abs(x)) | ((1 << 7) if x >= 0 else 0)
                 ),
             ),
             Container(name="Угол поворота МК (t0)", desc=Container(word=6, factor=2)),
@@ -382,21 +382,21 @@ formats = Container(
                 name="Проекция угла наклона ε0",
                 desc=Container(
                     word=9,
-                    encode=lambda x: round(x / 0.3) | ((1 << 7) if x >= 0 else 0)
+                    encode=lambda x: round(abs(x) / 0.3) | ((1 << 7) if x >= 0 else 0)
                 )
             ),
             Container(
                 name="Проекция угла наклона ε1",
                 desc=Container(
                     word=10,
-                    encode=lambda x: round(x / 0.3) | ((1 << 7) if x >= 0 else 0)
+                    encode=lambda x: round(abs(x) / 0.3) | ((1 << 7) if x >= 0 else 0)
                 )
             ),
             Container(
                 name="Проекция угла наклона ε2",
                 desc=Container(
                     word=11,
-                    encode=lambda x: round(x / 0.3) | ((1 << 7) if x >= 0 else 0)
+                    encode=lambda x: round(abs(x) / 0.3) | ((1 << 7) if x >= 0 else 0)
                 )
             )
         )
