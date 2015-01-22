@@ -1,6 +1,14 @@
 ﻿import functools
+import sys
 
-import WDMTMKv2 as tmk
+if sys.platform == "linux":
+
+    import ltmk as tmk
+
+elif sys.platform == "win32":
+
+    import WDMTMKv2 as tmk
+
 from time import sleep
 
 
