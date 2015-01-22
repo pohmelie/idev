@@ -194,7 +194,7 @@ class Tmk:
         up = False
         crc = 0xffff
         for i in range(12):
-            crc ^= data[i]  & 0xff
+            crc ^= data[i] & 0xff
             for _ in range(8):
                 crc = (crc >> 1) & 0x7fff
                 if crc & 1:
@@ -222,10 +222,11 @@ class Tmk:
                 if rdata == (0x5555,):
                     self.log("Получена решётка 0x{:x}".format(rdata[0]), self.log.BORRING)
                 elif rdata == (0xaaaa,):
+                    self.log("Получена решётка 0x{:x}".format(rdata[0]), self.log.BORRING)
                     up = True
                     break
                 else:
-                    self.log("Получена неправильная решётка 0x{:x}".format(rdata[0]), self.log.ERROR)
+                    self.log("Получен неправильный ответ 0x{:x}".format(rdata[0]), self.log.ERROR)
                     break
         if up:
             self.log("Ввод прошёл")
