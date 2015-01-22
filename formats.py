@@ -359,8 +359,8 @@ formats = Container(
                 name="Движение цели",
                 desc=Container(word=0, bit=5, width=1,
                     text=OrderedDict((
-                        ("Приближение", 1),
-                        ("Удаление", 2),
+                        ("Приближение", 0),
+                        ("Удаление", 1),
                     ))
                 )
             ),
