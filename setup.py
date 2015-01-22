@@ -7,6 +7,9 @@ options = {
         "create_shared_zip": False,
         "packages": [],
         "include_msvcr": True,
+        "include_files": [
+            "favicon.ico",
+        ]
     }
 }
 
