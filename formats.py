@@ -375,8 +375,8 @@ formats = Container(
                     encode=lambda x: round(abs(x)) | ((1 << 7) if x >= 0 else 0)
                 ),
             ),
-            Container(name="Угол поворота МК (t0)", desc=Container(word=6, factor=2)),
-            Container(name="Угол поворота МК (t1)", desc=Container(word=7, factor=2)),
+            Container(name="Угол поворота МК φ₀ (t0)", desc=Container(word=6, factor=2)),
+            Container(name="Угол поворота МК φ₁ (t1)", desc=Container(word=7, factor=2)),
             Container(name="Время между t0 и t1", desc=Container(word=8, factor=0.01)),
             Container(
                 name="Проекция угла наклона ε0",
