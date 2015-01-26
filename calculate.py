@@ -1,4 +1,5 @@
 import collections
+import itertools
 from math import asin, atan, atan2, sin, cos, pi
 
 
@@ -11,8 +12,8 @@ def plavun(data):
     Beta_celi_Nosit = float(data["Угол цели β (t0)"])
     D_celi_Nosit = float(data["Дистанция до цели (t0)"])
     Uglubl_Nosit = float(data["Углубление МК"])
-    fi0_Nosit = float(data["Угол поворота МК (t0)"])
-    fi1_Nosit = float(data["Угол поворота МК (t1)"])
+    fi0_Nosit = 360 - float(data["Угол поворота МК φ₀ (t0)"])
+    fi1_Nosit = 360 - float(data["Угол поворота МК φ₁ (t1)"])
 
     if abs(e0_Nosit) < 0.3:
 
@@ -157,11 +158,68 @@ def plavun(data):
 
     Y0 = -Uglubl_Nosit
 
-    return collections.OrderedDict((
+    calc = collections.OrderedDict((
         ("ψ₀", psi_n * prm),
         ("θ₀", qet_n * prm),
         ("γ₀", gam_n * prm),
         ("Y₀", Y0),
+    ))
+    calc.update(plavun_additional(psi_n, qet_n, gam_n, prm))
+    return calc
+
+
+def plavun_additional(psi_n, qet_n, gam_n, prm):
+
+    cp = cos(0.5 * psi_n)
+    sp = sin(0.5 * psi_n)
+    cq = cos(0.5 * qet_n)
+    sq = sin(0.5 * qet_n)
+    cg = cos(0.5 * gam_n)
+    sg = sin(0.5 * gam_n)
+    R0 = R01 = cp * cq * cg - sp * sq * sg
+    R1 = R11 = cp * cq * sg + sp * sq * cg
+    R2 = R21 = sp * cq * cg + cp * sq * sg
+    R3 = R31 = cp * sq * cg - sp * cq * sg
+
+    AIR = collections.defaultdict(int)
+    AIR[1, 2] = R0 * R0
+    AIR[1, 3] = R1 * R1
+    R0R1 = R2 * R2
+    R2R3 = R3 * R3
+    AIR[1, 1] = AIR[1, 2] + AIR[1, 3] - R0R1 - R2R3
+    AIR[2, 2] = AIR[1, 2] + R0R1 - AIR[1, 3] - R2R3
+    AIR[3, 3] = AIR[1, 2] + R2R3 - AIR[1, 3] - R0R1
+    R0R1 = R1 * R2
+    R2R3 = R0 * R3
+    AIR[1, 2] = (R0R1 - R2R3) * 2
+    AIR[2, 1] = (R2R3 + R0R1) * 2
+    R0R1 = R0 * R2
+    R2R3 = R3 * R1
+    AIR[1, 3] = (R0R1 + R2R3) * 2
+    AIR[3, 1] = (R2R3 - R0R1) * 2
+    R0R1 = R2 * R3
+    R2R3 = R0 * R1
+    AIR[2, 3] = (R0R1 - R2R3) * 2
+    AIR[3, 2] = (R0R1 + R2R3) * 2
+    for i, j in itertools.product(range(4), repeat=2):
+
+        AIR[i, j] = max(min(AIR[i, j], 1), -1)
+
+    Qbins = asin(AIR[2, 1]) * prm
+    if abs(AIR[2, 1]) < 0.997:
+
+        Pbins = atan2(-AIR[3, 1], AIR[1, 1]) * prm
+        Gbins = atan2(-AIR[2, 3], AIR[2, 2]) * prm
+
+    else:
+
+        Gbins = atan2(AIR[1, 3], AIR[3, 3]) * prm
+        Pbins = 0
+
+    return collections.OrderedDict((
+        ("ψ бинс", Pbins),
+        ("θ бинс", Qbins),
+        ("γ бинс", Gbins),
     ))
 
 
