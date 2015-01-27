@@ -163,9 +163,10 @@ def plavun(data):
         ("θ₀", qet_n * prm),
         ("γ₀", gam_n * prm),
         ("Y₀", Y0),
-        ("X цели", Xg_c),
-        ("Y цели", Yg_c),
-        ("Z цели", Zg_c),
+        ("X цели", Xnc),
+        ("Y цели", Ync),
+        ("Z цели", Znc),
+        ("ψ расчётное", Psi_ras),
     ))
     calc.update(plavun_additional(psi_n, qet_n, gam_n, prm))
     return calc
