@@ -95,8 +95,8 @@ formats = Container(
         codename="kant3",
         description="КАНТ-3",
         address=OrderedDict((
-            ("Практический", 28),
-            ("Боевой", 27)
+            ("Практический", 18),
+            ("Боевой", 18)
         )),
         fields=(
             Container(

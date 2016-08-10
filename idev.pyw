@@ -73,7 +73,7 @@ class Idev:
             except:
 
                 calculated = {"Невозможно вычислить параметры": ""}
-                
+
             for k, v in calculated.items():
 
                 self.tdata.insert("", "end", text=k, values=(v,))
@@ -128,7 +128,7 @@ class Idev:
             d.fields[t] = s
 
             try:
-                
+
                 if hasattr(calculate, d.codename):
 
                     calculated = getattr(calculate, d.codename)(d.fields)
